@@ -65,6 +65,9 @@ jobs:
           echo "$PWD/vulkan-sdk/Bin" >> $env:GITHUB_PATH
         if: contains(matrix.platform, 'windows')
 
+      - name: Install OpenSSL (macOS x86_64)
+        run: arch -x86_64 brew install openssl
+
       - name: Build with CMake and Ninja
         run: |
           cmake -G Ninja -B build . -DCMAKE_BUILD_TYPE=Release -DVERSION="$(git rev-parse --short HEAD)" ${{ matrix.cmake-args }}
