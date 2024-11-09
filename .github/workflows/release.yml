@@ -12,11 +12,11 @@ jobs:
       matrix:
         include:
           - platform: "macos-latest" # for Arm based macs (M1 and above).
-            cmake-command: "cmake -G Ninja -B build . -DFFMPEG_DOWNLOAD=ON"
+            cmake-args: "-DFFMPEG_DOWNLOAD=ON"
           - platform: "ubuntu-22.04" # Ubuntu 22.04 x86_64 (Works on 24.04 as well)
-            cmake-command: "cmake -G Ninja -B build . -DFFMPEG_DOWNLOAD=ON"
+            cmake-args: "-DFFMPEG_DOWNLOAD=ON"
           - platform: "windows-latest" # Windows x86_64
-            cmake-command: "cmake -G Ninja -B build . -DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON"
+            cmake-args: "-DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON"
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -37,12 +37,12 @@ jobs:
 
       - name: Setup VULKAN_PATH on Windows
         run: |
-          echo "VULKAN_SDK=$env:VULKAN_SDK\1.3.204.0" >> $env:GITHUB_ENV
+          echo "VULKAN_SDK=$env:VULKAN_SDK/1.3.204.0" >> $env:GITHUB_ENV
         if: contains(matrix.platform, 'windows')
 
       - name: Build with CMake and Ninja
         run: |
-          ${{ matrix.cmake-command }}
+          cmake -G Ninja -B build . -DVERSION="$(git rev-parse --short HEAD)" ${{ matrix.cmake-args }}
           cmake --build build --config Release
 
       - name: Rename output and package (Unix)

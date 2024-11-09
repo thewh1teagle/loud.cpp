@@ -18,8 +18,8 @@ target_include_directories(main PRIVATE "${CMAKE_SOURCE_DIR}/include")
 set_target_properties(main PROPERTIES OUTPUT_NAME "loud")
 set_target_properties(main PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
-# -DCOMMIT_HASH="$(git rev-parse --short HEAD)"
-add_compile_definitions(COMMIT_HASH="${COMMIT_HASH}")
+# -DVERSION="$(git rev-parse --short HEAD)"
+add_compile_definitions(VERSION="${VERSION}")
 
 # Used in __FILE__ for relative path
 string(LENGTH "${PROJECT_SOURCE_DIR}/" SOURCE_PATH_SIZE)
