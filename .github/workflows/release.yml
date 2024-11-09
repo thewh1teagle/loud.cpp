@@ -37,7 +37,7 @@ jobs:
 
       - name: Setup VULKAN_PATH on Windows
         run: |
-          echo "VULKAN_SDK=$VULKAN_SDK\1.3.204.0" >> $env:GITHUB_ENV
+          echo "VULKAN_SDK=$env:VULKAN_SDK\1.3.204.0" >> $env:GITHUB_ENV
         if: contains(matrix.platform, 'windows')
 
       - name: Build with CMake and Ninja
