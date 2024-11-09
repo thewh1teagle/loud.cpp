@@ -48,6 +48,7 @@ jobs:
         run: |
           C:\msys64\usr\bin\wget https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-win.zip
           7z x ninja-win.zip
+          echo "$PWD" >> $env:GITHUB_PATH
         if: contains(matrix.platform, 'windows')
 
       - name: Prepare Vulkan SDK (Linux)
