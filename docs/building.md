@@ -91,3 +91,11 @@ chmod +x *
 cmake -G Ninja -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_SYSTEM_NAME=Darwin .
 cmake --build build --config Release
 ```
+
+## Compare pyannote-diarization
+
+https://huggingface.co/spaces/pyannote/pretrained-pipelines
+
+## Try more embedding models
+
+See [sherpa-onnx/releases/tag/speaker-recongition-models](https://github.com/k2-fsa/sherpa-onnx/releases/tag/speaker-recongition-models)
