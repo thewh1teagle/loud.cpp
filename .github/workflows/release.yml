@@ -33,6 +33,8 @@ jobs:
           vulkan-query-version: 1.3.296.0
           vulkan-use-cache: true
           vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
+        env:
+          ENABLE_OPT: "0"
         if: (contains(matrix.platform, 'windows') || contains(matrix.platform, 'ubuntu'))
 
       - name: Build with CMake and Ninja
