@@ -21,10 +21,10 @@ jobs:
 
           - platform: "ubuntu-22.04" # Linux x86-64
             cmake-args: "-DFFMPEG_DOWNLOAD=ON"
-            archive: loud-linux.tar.gz
+            archive: loud-linux-x86-64.tar.gz
           - platform: "windows-latest" # Windows x86_64
             cmake-args: "-DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON"
-            archive: loud-windows.zip
+            archive: loud-windows-x86-64.zip
     runs-on: ${{ matrix.platform }}
 
     steps:
