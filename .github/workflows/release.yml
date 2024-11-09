@@ -1,37 +1,67 @@
-name: macOS Build and Upload Artifact
+name: Build and Upload Artifact
 
 on:
   workflow_dispatch: null
 
 jobs:
   build:
-    runs-on: macos-latest
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "macos-latest" # for Arm based macs (M1 and above).
+            cmake-command: "cmake -G Ninja -B build . -DFFMPEG_DOWNLOAD=ON"
+          - platform: "ubuntu-22.04" # Ubuntu 22.04 x86_64 (Works on 24.04 as well)
+            cmake-command: "cmake -G Ninja -B build . -DFFMPEG_DOWNLOAD=ON"
+          - platform: "windows-latest" # Windows x86_64
+            cmake-command: "cmake -G Ninja -B build . -DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON"
+    runs-on: ${{ matrix.platform }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # - name: Install LLVM and Clang
-      #   uses: KyleMayes/install-llvm-action@v2
-      #   with:
-      #     version: "10.0"
-
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2
       - uses: seanmiddleditch/gha-setup-ninja@master
 
+      - name: Prepare Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.0
+        with:
+          vulkan-query-version: 1.3.204.0
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
+        if: contains(matrix.platform, 'windows')
+
       - name: Build with CMake and Ninja
         run: |
-          cmake -G Ninja -B build .
+          ${{ matrix.cmake-command }}
           cmake --build build --config Release
 
-      - name: Rename output and package
+      - name: Rename output and package (Unix)
         run: |
           mv build/bin build/loud
           tar -czf build/loud.tar.gz -C build loud
+        if: (!contains(matrix.platform, 'windows'))
 
-      - name: Upload build artifact
+      - name: Rename output and package (Windows)
+        run: |
+          Move-Item build/bin build/loud
+          "C:\Program Files\7-Zip\7z.exe" a build\loud.zip build\loud
+        if: contains(matrix.platform, 'windows')
+
+      - name: Upload build artifact (Unix)
         uses: actions/upload-artifact@v4
         with:
           name: loud-artifact
           path: build/loud.tar.gz
+        if: (!contains(matrix.platform, 'windows'))
+
+      - name: Upload build artifact (Windows)
+        uses: actions/upload-artifact@v4
+        with:
+          name: loud-artifact
+          path: build/loud.zip
+        if: contains(matrix.platform, 'windows')
