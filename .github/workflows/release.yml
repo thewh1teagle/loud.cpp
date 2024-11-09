@@ -13,10 +13,13 @@ jobs:
         include:
           - platform: "macos-latest" # for Arm based macs (M1 and above).
             cmake-args: "-DFFMPEG_DOWNLOAD=ON"
+            archive: loud-darwin.tar.gz
           - platform: "ubuntu-22.04" # Ubuntu 22.04 x86_64 (Works on 24.04 as well)
             cmake-args: "-DFFMPEG_DOWNLOAD=ON"
+            archive: loud-linux.tar.gz
           - platform: "windows-latest" # Windows x86_64
             cmake-args: "-DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON"
+            archive: loud-windows.zip
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -53,13 +56,13 @@ jobs:
       - name: Rename output and package (Unix)
         run: |
           mv build/bin build/loud
-          tar -czf build/loud.tar.gz -C build loud
+          tar -czf build/${{ matrix.archive }} -C build loud
         if: (!contains(matrix.platform, 'windows'))
 
       - name: Rename output and package (Windows)
         run: |
           Move-Item build/bin build/loud
-          7z a build\loud.zip build\loud
+          7z a build\${{ matrix.archive }} build\loud
         if: contains(matrix.platform, 'windows')
 
       # - name: Upload build artifact (Unix)
@@ -77,14 +80,14 @@ jobs:
 
       - name: Upload release (Windows)
         run: |
-          gh release upload $(git describe --tags --abbrev=0) build/loud.zip --clobber
+          gh release upload $(git describe --tags --abbrev=0) build/${{ matrix.archive }} --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: contains(matrix.platform, 'windows')
 
       - name: Upload release (Unix)
         run: |
-          gh release upload `git describe --tags --abbrev=0` build/loud.zip --clobber
+          gh release upload `git describe --tags --abbrev=0` build/${{ matrix.archive }} --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: (!contains(matrix.platform , 'windows'))
