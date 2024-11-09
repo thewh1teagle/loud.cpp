@@ -66,7 +66,8 @@ jobs:
         if: contains(matrix.platform, 'windows')
 
       - name: Install OpenSSL (macOS x86_64)
-        run: arch -x86_64 brew install openssl
+        run: arch -x86_64 brew reinstall openssl
+        if: contains(matrix.cmake-args, 'CMAKE_OSX_ARCHITECTURES="x86_64"')
 
       - name: Build with CMake and Ninja
         run: |
