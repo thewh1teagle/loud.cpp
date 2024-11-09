@@ -39,7 +39,8 @@ jobs:
         run: |
           C:\msys64\usr\bin\wget https://sdk.lunarg.com/sdk/download/1.3.296.0/windows/VulkanSDK-1.3.296.0-Installer.exe
           7z x VulkanSDK-1.3.296.0-Installer.exe -ovulkan-sdk
-          echo "VULKAN_SDK=$(pwd)/vulkan-sdk" >> $GITHUB_ENV
+          echo "VULKAN_SDK=$PWD/vulkan-sdk" >> $GITHUB_ENV
+          echo "$PWD/vulkan-sdk/Bin" >> $GITHUB_PATH
         if: contains(matrix.platform, 'windows')
 
       - name: Build with CMake and Ninja
