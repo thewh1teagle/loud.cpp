@@ -8,6 +8,7 @@ set(USE_LIBIDN2 OFF)
 set(BUILD_CURL_EXE OFF)
 set(CURL_USE_LIBPSL OFF)
 set(CURL_USE_LIBSSH2 OFF)
+set(HTTP_ONLY ON)
 
 # Supress warnings
 add_compile_options(-w)
