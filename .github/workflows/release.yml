@@ -22,6 +22,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Setup cmake
         uses: jwlawson/actions-setup-cmake@v2
@@ -57,7 +59,7 @@ jobs:
       - name: Rename output and package (Windows)
         run: |
           Move-Item build/bin build/loud
-          "C:\Program Files\7-Zip\7z.exe" a build\loud.zip build\loud
+          7z a build\loud.zip build\loud
         if: contains(matrix.platform, 'windows')
 
       # - name: Upload build artifact (Unix)
