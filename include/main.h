@@ -19,7 +19,7 @@
                 << std::endl;                                                  \
       std::cerr << "  "                                                        \
                    "https://github.com/thewh1teagle/loud.cpp/issues/"          \
-                   "new?body=commit="                                          \
+                   "new?body=version="                                         \
                 << VERSION << std::endl;                                       \
     } else {                                                                   \
       std::cerr << "Does this seem unexpected? Report the issue at: "          \
