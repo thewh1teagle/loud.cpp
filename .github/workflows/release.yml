@@ -42,9 +42,12 @@ jobs:
             sudo apt-get update
             sudo apt install ninja-build
           fi
+        if: (!contains(matrix.platform, 'windows'))
+
       - name: Prepare ninja (Windows)
         run: |
           winget install --id=Ninja-build.Ninja -e
+        if: contains(matrix.platform, 'windows')
 
       - name: Prepare Vulkan SDK (Linux)
         run: |
