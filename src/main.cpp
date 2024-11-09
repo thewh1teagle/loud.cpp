@@ -158,10 +158,9 @@ int32_t diarization_progress_callback(int32_t num_processed_chunk,
 
 int main(int argc, char *argv[]) {
 
-  CLI::App app{"Speech to text with ONNX and Whisper"};
-  app.version()
+  CLI::App app{"Loud.cpp\nSpeech to text with ONNX and Whisper\n"};
 
-      std::string model_path;
+  std::string model_path;
   std::string audio_file;
   std::string json_path;
   std::string segmentation_model_path =
