@@ -2,9 +2,13 @@
 #include <atomic>
 #include <chrono>
 #include <iostream>
-#include <sys/signal.h>
+
 #include <thread>
 #include <vector>
+
+#ifndef _WIN32
+#include <sys/signal.h>
+#endif
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -36,18 +40,23 @@ void showCursor() {
 #endif
 }
 
+#ifndef _WIN32
 void signalHandler(int signum) {
   showCursor();
   std::exit(signum);
 }
+#endif
 
 Spinner::Spinner(const std::string &initialMessage)
     : message(initialMessage), spinning(false) {
+
+#ifndef _WIN32
   // Make sure it shows the cursor when the program exit
   signal(SIGINT, signalHandler);
   signal(SIGABRT, signalHandler);
   signal(SIGTERM, signalHandler);
   signal(SIGQUIT, signalHandler);
+#endif
 }
 
 void Spinner::start() {
@@ -108,8 +117,10 @@ void Spinner::stop() {
 
 Spinner::~Spinner() {
   stop();
+#ifndef _WIN32
   signal(SIGINT, SIG_DFL);
   signal(SIGABRT, SIG_DFL);
   signal(SIGTERM, SIG_DFL);
   signal(SIGQUIT, SIG_DFL);
+#endif
 }
