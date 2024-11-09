@@ -2,7 +2,7 @@
 
 namespace config {
 std::string ggml_tiny_url =
-    "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/";
+    "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-tiny.bin";
 std::string ggml_tiny_name = "ggml-tiny.bin";
 
 std::string segmentation_url =
