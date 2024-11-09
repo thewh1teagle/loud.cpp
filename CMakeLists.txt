@@ -44,3 +44,15 @@ include(cmake/whisper.cmake)
 if (FFMPEG_DOWNLOAD)
     include(cmake/static-ffmpeg.cmake)
 endif()
+
+if(APPLE)
+    # Find shared libs on macOS at runtime
+    set_target_properties(main PROPERTIES MACOSX_RPATH TRUE)
+
+    # Add additional rpath
+    add_custom_command(TARGET main
+        POST_BUILD COMMAND 
+        ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@executable_path"
+        $<TARGET_FILE:main>
+    )
+endif()

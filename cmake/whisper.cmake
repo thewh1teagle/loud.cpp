@@ -34,3 +34,18 @@ else()
         ggml
     )
 endif()
+
+
+
+# Whisper produce the shared libraries in lib
+file(GLOB SHARED_LIBS
+    "${CMAKE_BINARY_DIR}/lib/*.so"
+    "${CMAKE_BINARY_DIR}/lib/*.dylib"
+    "${CMAKE_BINARY_DIR}/lib/*.dll"
+)
+
+# Copy whisper libs to bin
+add_custom_command(TARGET main POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/bin
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SHARED_LIBS} ${CMAKE_BINARY_DIR}/bin
+)
