@@ -55,6 +55,7 @@ jobs:
       - name: Upload build artifact (Unix)
         uses: actions/upload-artifact@v4
         with:
+          name: loud-${{ matrix.platform }}
           path: build/loud.tar.gz
         if: (!contains(matrix.platform, 'windows'))
 
