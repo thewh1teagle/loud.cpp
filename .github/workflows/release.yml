@@ -30,7 +30,7 @@ jobs:
       - name: Prepare Vulkan SDK
         uses: humbletim/setup-vulkan-sdk@v1.2.0
         with:
-          vulkan-query-version: 1.3.204.0
+          vulkan-query-version: 1.3.296.0
           vulkan-use-cache: true
           vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
         if: (contains(matrix.platform, 'windows') || contains(matrix.platform, 'ubuntu'))
