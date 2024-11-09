@@ -55,13 +55,11 @@ jobs:
       - name: Upload build artifact (Unix)
         uses: actions/upload-artifact@v4
         with:
-          name: loud-artifact
           path: build/loud.tar.gz
         if: (!contains(matrix.platform, 'windows'))
 
       - name: Upload build artifact (Windows)
         uses: actions/upload-artifact@v4
         with:
-          name: loud-artifact
           path: build/loud.zip
         if: contains(matrix.platform, 'windows')
