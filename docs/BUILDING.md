@@ -77,3 +77,10 @@ cmake --build build --config Release
 gh release create v0.1.0 --notes ''
 gh release upload `git describe --tags --abbrev=0` loud.exe
 ```
+
+## Failed to execute on macos
+
+```console
+xattr -d com.apple.quarantine *
+chmod +x *
+```
