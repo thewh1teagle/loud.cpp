@@ -85,8 +85,8 @@ jobs:
 
       - name: Upload package (Windows)
         run: |
-          Move-Item build/bin build/loud
-          7z a build\${{ matrix.archive }} build\loud
+          Move-Item build/bin loud
+          7z a build\${{ matrix.archive }} loud
           gh release upload $(git describe --tags --abbrev=0) build/${{ matrix.archive }} --clobber
         env:
           GH_TOKEN: ${{ github.token }}
