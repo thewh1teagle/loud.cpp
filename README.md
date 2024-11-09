@@ -21,4 +21,4 @@ Download and extract it from [releases](https://github.com/thewh1teagle/loud.cpp
 
 ## Building
 
-See [BUILDING.md](docs/BUILDING.md)
+See [building.md](docs/building.md)
