@@ -46,9 +46,6 @@ if (FFMPEG_DOWNLOAD)
 endif()
 
 if(APPLE)
-    # Find shared libs on macOS at runtime
-    set_target_properties(main PROPERTIES MACOSX_RPATH TRUE)
-
     # Add additional rpath
     add_custom_command(TARGET main
         POST_BUILD COMMAND 
