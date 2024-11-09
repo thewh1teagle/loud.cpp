@@ -56,7 +56,7 @@ void Spinner::start() {
 
     // We keep the message updated as we go, calculating its maximum length
     while (spinning.load()) {
-#ifdef _WIN32
+#if defined(_MSC_VER) && !defined(__clang__)
       maxMessageLength = max(maxMessageLength, message.size());
 #else
       maxMessageLength = std::max(maxMessageLength, message.size());
