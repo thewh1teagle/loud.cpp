@@ -33,7 +33,7 @@ jobs:
           vulkan-query-version: 1.3.204.0
           vulkan-components: Vulkan-Headers, Vulkan-Loader
           vulkan-use-cache: true
-        if: contains(matrix.platform, 'windows')
+        if: (contains(matrix.platform, 'windows') || contains(matrix.platform, 'ubuntu'))
 
       - name: Build with CMake and Ninja
         run: |
