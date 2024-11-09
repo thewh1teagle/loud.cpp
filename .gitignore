@@ -1,6 +1,7 @@
 build/
 sherpa-onnx-*
-.cache
+.cache/
+loud/
 
 *.bin
 *.onnx
@@ -8,6 +9,7 @@ sherpa-onnx-*
 *.m4a
 *.mp3
 *.json
+*.tar.gz
 
 .DS_Store
 compile_commands.json
