@@ -1,3 +1,4 @@
+#include "config.h"
 #include "subprocess/ProcessBuilder.hpp"
 #include "subprocess/basic_types.hpp"
 #include "subprocess/shell_utils.hpp"
@@ -82,28 +83,17 @@ std::string get_relative_path(const std::string &absolute_path) {
 
 void show_ffmpeg_normalize_suggestion(const std::string &audio_path, int argc,
                                       char *argv[]) {
-  std::string platform = "";
 
-#ifdef __APPLE__
-  platform = "macOS";
-#elif _WIN32
-  platform = "Windows";
-#elif __linux__
-  platform = "Linux";
-#else
-  platform = "Unknown";
-#endif
-
-  std::cout << "It seems like you're on " << platform
+  std::cout << "It seems like you're on " << config::platform
             << ". Here's how you can normalize your audio using ffmpeg:\n";
 
   if (!is_ffmpeg_installed()) {
     std::cout << "**Install ffmpeg:**\n";
-    if (platform == "macOS") {
+    if (config::platform == "macos") {
       std::cout << "brew install ffmpeg\n";
-    } else if (platform == "Windows") {
+    } else if (config::platform == "windows") {
       std::cout << "winget install --id=Gyan.FFmpeg\n";
-    } else if (platform == "Linux") {
+    } else if (config::platform == "linux") {
       std::cout << "sudo apt install ffmpeg\n";
     }
   }

@@ -119,9 +119,15 @@ std::string get_default_provider() {
 
 std::string get_argv_line(int argc, char *argv[]) {
   std::ostringstream line;
+  if (config::platform == "windows") {
+    line << ".\\";
+  } else {
+    line << "./";
+  }
+
   for (int i = 0; i < argc; i++) {
-    if (i == 0) {
-      line << ffmpeg::get_relative_path(argv[0]) << " ";
+    if (i == 0 || i == 1) {
+      line << ffmpeg::get_relative_path(argv[i]) << " ";
     } else {
       line << argv[i] << " ";
     }

@@ -14,4 +14,14 @@ std::string embedding_url = "https://github.com/thewh1teagle/loud.cpp/releases/"
                             "download/v0.1.0/nemo_en_titanet_small.onnx";
 std::string embedding_name = "nemo_en_titanet_small.onnx";
 
+#ifdef __APPLE__
+std::string platform = "macos";
+#elif _WIN32
+std::string platform = "windows";
+#elif __linux__
+std::string platform = "linux";
+#else
+std::string platform = "unknown";
+#endif
+
 } // namespace config
