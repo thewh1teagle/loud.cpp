@@ -15,8 +15,8 @@ jobs:
             cmake-args: "-DFFMPEG_DOWNLOAD=ON"
             archive: loud-darwin-arm64.tar.gz
 
-          - platform: "macos-latest" # macOS x86-64
-            cmake-args: '-DFFMPEG_DOWNLOAD=ON -DCMAKE_OSX_ARCHITECTURES="x86_64" -DCMAKE_SYSTEM_NAME="Darwin"'
+          - platform: "macos-13" # macOS x86-64
+            cmake-args: "-DFFMPEG_DOWNLOAD=ON"
             archive: loud-darwin-x86-64.tar.gz
 
           - platform: "ubuntu-22.04" # Linux x86-64
@@ -64,10 +64,6 @@ jobs:
           echo "VULKAN_SDK=$PWD/vulkan-sdk" >> $env:GITHUB_ENV
           echo "$PWD/vulkan-sdk/Bin" >> $env:GITHUB_PATH
         if: contains(matrix.platform, 'windows')
-
-      - name: Install OpenSSL (macOS x86_64)
-        run: arch -x86_64 brew reinstall openssl
-        if: contains(matrix.cmake-args, 'CMAKE_OSX_ARCHITECTURES="x86_64"')
 
       - name: Build with CMake and Ninja
         run: |
