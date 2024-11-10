@@ -25,8 +25,8 @@ jobs:
           - platform: "windows-latest" # Windows x86_64
             cmake-args: "-DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON"
             archive: loud-windows-x86-64.zip
-          - platform: "windows-latest" # Windows x86_64
-            cmake-args: "-DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON -DSHERPA_STATIC=ON"
+          - platform: "windows-latest" # Windows x86_64 static
+            cmake-args: "-DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON -DSHERPA_STATIC=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
             archive: loud-windows-x86-64-static.zip
     runs-on: ${{ matrix.platform }}
 
