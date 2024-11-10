@@ -107,3 +107,10 @@ See [sherpa-onnx/releases/tag/speaker-recongition-models](https://github.com/k2-
 $env:CC = "clang"
 $env:CXX = "clang++"
 ```
+
+## Link sherpa static
+
+```console
+cmake -G "Ninja" -B build . -DCMAKE_BUILD_TYPE=Release -DGGML_VULKAN=ON -DSHERPA_STATIC=ON
+cmake --build build --config Release
+```

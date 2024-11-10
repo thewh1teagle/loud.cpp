@@ -20,7 +20,7 @@ Download and extract it from [releases](https://github.com/thewh1teagle/loud.cpp
 ## Usage
 
 ```console
-./loud ggml-tiny.bin single.wav --json transcript.json --download-models
+./loud audio.wav --json transcript.json --download-models
 ```
 
 ## Building

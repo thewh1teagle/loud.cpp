@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 project(main)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -10,6 +10,14 @@ endif()
 
 # Export compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Options
+option(FFMPEG_DOWNLOAD "Download and set up FFmpeg" OFF)
+option(SHERPA_STATIC "Link sherpa libs statically" OFF)
+
+if(SHERPA_STATIC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 
 # Prepare executable
 file(GLOB SRC_FILES "src/*.cpp")
@@ -31,19 +39,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
-# Options
-
-option(FFMPEG_DOWNLOAD "Download and set up FFmpeg" OFF)
-
 # External libraries
 include(FetchContent)
 include(cmake/cli11.cmake)
 include(cmake/json.cmake)
 include(cmake/termcolor.cmake)
-include(cmake/sherpa.cmake)
 include(cmake/whisper.cmake)
 include(cmake/subprocess.cmake)
 include(cmake/curl.cmake)
+if (SHERPA_STATIC)
+    include(cmake/sherpa-static.cmake)
+else()
+    include(cmake/sherpa.cmake)
+endif()
 if (FFMPEG_DOWNLOAD)
     include(cmake/static-ffmpeg.cmake)
 endif()
