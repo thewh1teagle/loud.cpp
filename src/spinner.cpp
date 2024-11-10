@@ -80,11 +80,8 @@ void Spinner::start() {
 
     // We keep the message updated as we go, calculating its maximum length
     while (spinning.load()) {
-#if defined(_WIN32)
-      maxMessageLength = max(maxMessageLength, message.size());
-#else
-      maxMessageLength = std::max(maxMessageLength, message.size());
-#endif
+      // Double parentheses because windows conflict with max() function
+      maxMessageLength = (std::max)(maxMessageLength, message.size());
 
       // Clear the line before printing the new spinner and message
       std::cout << "\r" << std::string(maxMessageLength + 3, ' ') << "\r"
