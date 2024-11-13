@@ -3,6 +3,9 @@ name: Build and Upload
 on:
   workflow_dispatch: null
 
+env:
+  SCCACHE_GHA_ENABLED: "true"
+
 jobs:
   build:
     permissions:
