@@ -70,17 +70,3 @@ if(APPLE)
         $<TARGET_FILE:main>
     )
 endif()
-
-# CCache
-if (LOUD_CCACHE)
-    find_program(LOUD_CCACHE_FOUND ccache)
-
-    if (LOUD_CCACHE_FOUND)
-        # TODO: should not be set globally
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-        set(ENV{CCACHE_SLOPPINESS} time_macros)
-        message(STATUS "ccache found, compilation results will be cached. Disable with LOUD_CCACHE=OFF.")
-    else()
-        message(STATUS "Warning: ccache not found - consider installing it for faster compilation or disable this warning with LOUD_CCACHE=OFF")
-    endif ()
-endif()

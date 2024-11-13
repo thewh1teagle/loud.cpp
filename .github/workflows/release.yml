@@ -68,12 +68,12 @@ jobs:
           echo "$PWD/vulkan-sdk/Bin" >> $env:GITHUB_PATH
         if: contains(matrix.platform, 'windows')
 
-      - name: Setup ccache
-        uses: Chocobo1/setup-ccache-action@v1
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.6
 
       - name: Build with CMake and Ninja
         run: |
-          cmake -G Ninja -B build . -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DLOUD_CCACHE=ON -DCMAKE_BUILD_TYPE=Release -DVERSION="$(git describe --tags --abbrev=0) ($(git rev-parse --short HEAD))" ${{ matrix.cmake-args }}
+          cmake -G Ninja -B build . -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DCMAKE_BUILD_TYPE=Release -DVERSION="$(git describe --tags --abbrev=0) ($(git rev-parse --short HEAD))" ${{ matrix.cmake-args }}
           cmake --build build --config Release
 
       - name: Upload package (Unix)
