@@ -79,7 +79,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: .cache
-          key: ${{ matrix.platform }}-cmake
+          key: ${{ matrix.platform }}-cmake-${{ matrix.archive }}
 
       - name: Build with CMake and Ninja
         run: |
