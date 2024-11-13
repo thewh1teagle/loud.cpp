@@ -75,7 +75,7 @@ jobs:
 
       - name: Build with CMake and Ninja
         run: |
-          cmake -G Ninja -B build . -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_BUILD_TYPE=Release -DVERSION="$(git describe --tags --abbrev=0) ($(git rev-parse --short HEAD))" ${{ matrix.cmake-args }}
+          cmake -G Ninja -B build . -DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DLOUD_CCACHE=ON -DCMAKE_BUILD_TYPE=Release -DVERSION="$(git describe --tags --abbrev=0) ($(git rev-parse --short HEAD))" ${{ matrix.cmake-args }}
           cmake --build build --config Release
 
       - name: Upload package (Unix)
