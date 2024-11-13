@@ -12,21 +12,21 @@ jobs:
       matrix:
         include:
           - platform: "macos-latest" # macOS arm64
-            cmake-args: "-DFFMPEG_DOWNLOAD=ON"
+            cmake-args: ""
             archive: loud-darwin-arm64.tar.gz
 
           - platform: "macos-13" # macOS x86-64
-            cmake-args: "-DFFMPEG_DOWNLOAD=ON"
+            cmake-args: ""
             archive: loud-darwin-x86-64.tar.gz
 
           - platform: "ubuntu-22.04" # Linux x86-64
-            cmake-args: "-DFFMPEG_DOWNLOAD=ON"
+            cmake-args: ""
             archive: loud-linux-x86-64.tar.gz
           - platform: "windows-latest" # Windows x86_64
-            cmake-args: "-DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON"
+            cmake-args: "-DGGML_VULKAN=ON"
             archive: loud-windows-x86-64.zip
           - platform: "windows-latest" # Windows x86_64 static
-            cmake-args: "-DGGML_VULKAN=ON -DFFMPEG_DOWNLOAD=ON -DSHERPA_STATIC=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
+            cmake-args: "-DGGML_VULKAN=ON -DSHERPA_STATIC=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
             archive: loud-windows-x86-64-static.zip
     runs-on: ${{ matrix.platform }}
 
