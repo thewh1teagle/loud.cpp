@@ -3,6 +3,7 @@
 #include "curl/curl.h"
 #include "curl/system.h"
 #include "spinner.h"
+#include "utils.h"
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -10,7 +11,6 @@
 #include <sstream>
 #include <string>
 #include <termcolor/termcolor.hpp>
-
 
 namespace fs = std::filesystem;
 
@@ -81,7 +81,12 @@ void download_file(const std::string url, const std::string path) {
               << " failed: " << curl_easy_strerror(res) << std::endl;
   }
 }
-void download_models_if_needed() {
+void download_resources_if_needed() {
+  if (!utils::is_program_installed("ffmpeg")) {
+    download_file(config::ffmpeg_url, config::ffmpeg_name);
+    utils::set_executable(config::ffmpeg_name);
+  }
+
   if (!fs::exists(config::segmentation_name)) {
     download_file(config::segmentation_url, config::segmentation_name);
   }

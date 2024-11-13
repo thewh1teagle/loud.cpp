@@ -86,6 +86,8 @@ jobs:
             codesign -f -s "-" ./build/bin/*
           fi
           mv build/bin build/loud
+          # Add test.wav
+          wget https://github.com/thewh1teagle/loud.cpp/releases/download/v0.1.0/test.wav -O build/loud/test.wav
           tar -czf build/${{ matrix.archive }} -C build loud
           gh release upload `git describe --tags --abbrev=0` build/${{ matrix.archive }} --clobber
         env:
@@ -95,6 +97,7 @@ jobs:
       - name: Upload package (Windows)
         run: |
           Move-Item build/bin loud
+          C:\msys64\usr\bin\wget https://github.com/thewh1teagle/loud.cpp/releases/download/v0.1.0/test.wav -O loud/test.wav
           7z a build\${{ matrix.archive }} loud
           gh release upload $(git describe --tags --abbrev=0) build/${{ matrix.archive }} --clobber
         env:

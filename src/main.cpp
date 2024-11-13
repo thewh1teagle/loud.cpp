@@ -13,6 +13,8 @@
 #include <termcolor/termcolor.hpp>
 #include <whisper.h>
 
+namespace fs = std::filesystem;
+
 using spinner::Spinner;
 using utils::contains;
 
@@ -30,7 +32,7 @@ int main(int argc, char *argv[]) {
   int32_t onnx_num_threads = 4;
   std::string onnx_provider = diarization::get_default_provider();
   bool debug = false;
-  bool download_models = false;
+  bool setup = false;
   bool show_version = false;
 
   // Audio required conditionally
@@ -43,9 +45,9 @@ int main(int argc, char *argv[]) {
 
   app.add_option("--language", language,
                  "Language to transcribe with (Default: en)");
-  app.add_flag(
-      "--download-models", download_models,
-      "Download models (pyannote segment, whisper tiny, nemo small en)");
+  app.add_flag("--setup", setup,
+               "Download models (pyannote segment, whisper tiny, nemo small "
+               "en) and FFMPEG if not found");
   app.add_flag("--version,-v", show_version, "Show loud.cpp version and exit");
   app.add_option("--json", json_path, "Path to save the JSON output");
   app.add_option("--whisper-model", whisper_model_path, "Path to the model");
@@ -75,17 +77,24 @@ int main(int argc, char *argv[]) {
   }
 
   // Download models
-  if (download_models) {
-    download::download_models_if_needed();
+  if (setup) {
+    download::download_resources_if_needed();
   }
 
   // Check if models exists
-  if (!utils::check_model_exists(embedding_model_path, argc, argv))
+  if (!utils::check_resource_exists(embedding_model_path, argc, argv))
     return EXIT_FAILURE;
-  if (!utils::check_model_exists(segmentation_model_path, argc, argv))
+  if (!utils::check_resource_exists(segmentation_model_path, argc, argv))
     return EXIT_FAILURE;
-  if (!utils::check_model_exists(whisper_model_path, argc, argv))
+  if (!utils::check_resource_exists(whisper_model_path, argc, argv))
     return EXIT_FAILURE;
+
+  // Check if it's not wav file. then suggest download FFMPEG
+  if (fs::path(audio_file).extension().string() != ".wav") {
+    if (!utils::check_program_installed("ffmpeg", argc, argv)) {
+      return EXIT_FAILURE;
+    }
+  }
 
   // Read wave file
   auto wave = diarization::prepare_audio_file(audio_file, argc, argv);
@@ -118,7 +127,9 @@ int main(int argc, char *argv[]) {
   auto json =
       segments::process_segments(segments, num_segments, wave, ctx, params);
   // Write JSON file
-  utils::save_json(json_path, json);
+  if (!json_path.empty()) {
+    utils::save_json(json_path, json);
+  }
 
   // Cleanup
   SherpaOnnxOfflineSpeakerDiarizationDestroySegment(segments);
