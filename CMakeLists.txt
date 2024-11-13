@@ -11,13 +11,17 @@ endif()
 # Options
 option(FFMPEG_DOWNLOAD "Download and set up FFmpeg" OFF)
 option(SHERPA_STATIC "Link sherpa libs statically" OFF)
-option(LOUD_SCCACHE "Enable loud ccache" OFF)
+option(LOUD_SCCACHE "Enable loud ccache" ON)
 
 if(LOUD_SCCACHE)
-    message("SCCache Enabled")
-    find_program(SCCACHE sccache REQUIRED)
-    set(CMAKE_C_COMPILER_LAUNCHER ${SCCACHE})
-    set(CMAKE_CXX_COMPILER_LAUNCHER ${SCCACHE})
+    find_program(SCCACHE_FOUND sccache)
+    if (SCCACHE_FOUND)
+        message(STATUS "SCCache Enabled")
+        set(CMAKE_C_COMPILER_LAUNCHER ${SCCACHE})
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${SCCACHE})
+    else()
+        message(WARNING "Warning: sccache not found - consider installing it for faster compilation or disable this warning with LOUD_SCCACHE=OFF.")
+    endif()
 endif()
 
 # Export compile_commands.json
