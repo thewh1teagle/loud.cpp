@@ -4,5 +4,5 @@
 
 namespace download {
 void download_file(std::string url, std::string path);
-void download_models_if_needed();
+void download_resources_if_needed();
 } // namespace download

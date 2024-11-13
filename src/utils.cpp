@@ -1,3 +1,4 @@
+#include "config.h"
 #include <filesystem>
 #include <fstream>
 #include <nlohmann/json.hpp>
@@ -5,6 +6,10 @@
 #include <sstream>
 #include <string>
 #include <subprocess.hpp>
+
+#ifdef PLATFORM_UNIX
+#include <sys/stat.h>
+#endif
 
 namespace fs = std::filesystem;
 
@@ -81,15 +86,29 @@ void save_json(const std::string &json_path,
   }
 }
 
-bool check_model_exists(const std::string &model_path, int argc, char *argv[]) {
-  if (!fs::exists(model_path)) {
-    std::cout << "Model " << " not found at " << model_path << std::endl
+bool check_resource_exists(const std::string &resource_path, int argc,
+                           char *argv[]) {
+  if (!fs::exists(resource_path)) {
+    std::cout << "File " << " not found at " << resource_path << std::endl
               << std::endl
               << "Please execute the following command to download models "
                  "automatically:"
               << std::endl
-              << utils::get_argv_line(argc, argv) << " --download-models"
-              << std::endl;
+              << utils::get_argv_line(argc, argv) << " --setup" << std::endl;
+    return false;
+  }
+  return true;
+}
+
+bool check_program_installed(const std::string &program_path, int argc,
+                             char *argv[]) {
+  if (!is_program_installed(program_path)) {
+    std::cout
+        << "program " << program_path << " not found" << std::endl
+        << std::endl
+        << "Please execute the following command to download automatically"
+        << std::endl
+        << utils::get_argv_line(argc, argv) << " --setup" << std::endl;
     return false;
   }
   return true;
@@ -102,6 +121,16 @@ bool contains(int argc, char *argv[], const std::string &arg) {
     }
   }
   return false;
+}
+
+void set_executable(const std::string &file_path) {
+#ifdef PLATFORM_UNIX
+  if (chmod(file_path.c_str(),
+            S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
+    std::cerr << "Error setting executable permissions on " << file_path
+              << std::endl;
+  }
+#endif
 }
 
 } // namespace utils
