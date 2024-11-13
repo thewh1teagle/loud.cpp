@@ -5,6 +5,8 @@ on:
 
 env:
   SCCACHE_GHA_ENABLED: "true"
+  CC: "clang"
+  CXX: "clang++"
 
 jobs:
   build:
@@ -29,7 +31,7 @@ jobs:
             cmake-args: "-DGGML_VULKAN=ON"
             archive: loud-windows-x86-64.zip
           - platform: "windows-latest" # Windows x86_64 static
-            cmake-args: "-DGGML_VULKAN=ON -DSHERPA_STATIC=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++"
+            cmake-args: "-DGGML_VULKAN=ON -DSHERPA_STATIC=ON"
             archive: loud-windows-x86-64-static.zip
     runs-on: ${{ matrix.platform }}
 
