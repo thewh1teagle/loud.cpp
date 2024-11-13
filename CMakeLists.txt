@@ -14,6 +14,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Options
 option(FFMPEG_DOWNLOAD "Download and set up FFmpeg" OFF)
 option(SHERPA_STATIC "Link sherpa libs statically" OFF)
+option(LOUD_CCACHE "Enable loud ccache" OFF)
 
 if(SHERPA_STATIC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -68,4 +69,18 @@ if(APPLE)
         ${CMAKE_INSTALL_NAME_TOOL} -add_rpath "@executable_path"
         $<TARGET_FILE:main>
     )
+endif()
+
+# CCache
+if (LOUD_CCACHE)
+    find_program(LOUD_CCACHE_FOUND ccache)
+
+    if (LOUD_CCACHE_FOUND)
+        # TODO: should not be set globally
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+        set(ENV{CCACHE_SLOPPINESS} time_macros)
+        message(STATUS "ccache found, compilation results will be cached. Disable with LOUD_CCACHE=OFF.")
+    else()
+        message(STATUS "Warning: ccache not found - consider installing it for faster compilation or disable this warning with LOUD_CCACHE=OFF")
+    endif ()
 endif()
