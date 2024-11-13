@@ -9,9 +9,9 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
 endif()
 
 # Options
+option(LOUD_SCCACHE "Enable loud ccache" ON)
 option(FFMPEG_DOWNLOAD "Download and set up FFmpeg" OFF)
 option(SHERPA_STATIC "Link sherpa libs statically" OFF)
-option(LOUD_SCCACHE "Enable loud ccache" ON)
 
 if(LOUD_SCCACHE)
     find_program(SCCACHE_FOUND sccache)
