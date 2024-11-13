@@ -1,8 +1,9 @@
 FetchContent_Declare(curl URL https://curl.se/download/curl-8.11.0.tar.gz)
 
 set(BUILD_STATIC_LIBS ON)
-set(BUILD_SHARED_LIBS OFF)
+set(CURL_DISABLE_TESTS ON)
 set(BUILD_TESTING OFF)
+set(BUILD_SHARED_LIBS OFF)
 set(BUILD_EXAMPLES OFF)
 set(USE_LIBIDN2 OFF)
 set(BUILD_CURL_EXE OFF)
