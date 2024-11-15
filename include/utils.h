@@ -1,37 +1,39 @@
 #pragma once
 
+#include "curl/curl.h"
+#include <fmt/core.h>
 #include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
 #include <string>
+#include <termcolor/termcolor.hpp>
 
-#ifndef VERSION
-#define VERSION ""
-#endif
+inline std::string url_encode(const std::string &decoded) {
+  const auto encoded_value = curl_easy_escape(
+      nullptr, decoded.c_str(), static_cast<int>(decoded.length()));
+  std::string result(encoded_value);
+  curl_free(encoded_value);
+  return result;
+}
 
 // https://stackoverflow.com/a/68523164
 #define __FILENAME__ strstr(__FILE__, SOURCE_PATH) + SOURCE_PATH_SIZE
 
-#ifndef CHECK_NULL
 #define CHECK_NULL(ptr)                                                        \
   if (!ptr) {                                                                  \
-    std::cerr << "Error: Null pointer detected (" << #ptr << ")"               \
-              << " in " << __func__ << " at " << __FILENAME__ << ":"           \
-              << __LINE__ << std::endl;                                        \
-    if (VERSION[0] != '\0') {                                                  \
-      std::cerr << "  Commit: " << VERSION << std::endl;                       \
-      std::cerr << "  See the issue report here (including commit hash):"      \
-                << std::endl;                                                  \
-      std::cerr << "  "                                                        \
-                   "https://github.com/thewh1teagle/loud.cpp/issues/"          \
-                   "new?body=version="                                         \
-                << VERSION << std::endl;                                       \
-    } else {                                                                   \
-      std::cerr << "Does this seem unexpected? Report the issue at: "          \
-                << "https://github.com/thewh1teagle/loud.cpp/issues/new"       \
-                << std::endl;                                                  \
-    }                                                                          \
+    std::string issue_body = fmt::format(                                      \
+        "\n\n**Version**: `{}`\n**Commit**: `{}`\n**Location**: "              \
+        "[`{}:{}`](https://github.com/thewh1teagle/loud.cpp/blob/"             \
+        "{}/{}#L{})",                                                          \
+        TAG, REV, __FILENAME__, __LINE__, REV, __FILENAME__, __LINE__);        \
+    std::string issue_url =                                                    \
+        fmt::format("https://github.com/thewh1teagle/loud.cpp/issues/"         \
+                    "new?labels=bug&body={}",                                  \
+                    url_encode(issue_body));                                   \
+    SPDLOG_ERROR("Error: Null pointer detected. Unexpected? "                  \
+                 "Report at: {}",                                              \
+                 issue_url);                                                   \
     return EXIT_FAILURE;                                                       \
   }
-#endif
 
 namespace utils {
 

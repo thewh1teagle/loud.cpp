@@ -31,6 +31,7 @@ using spinner::Spinner;
 using utils::contains;
 
 int main(int argc, char *argv[]) {
+  CHECK_NULL(nullptr);
   spdlog::cfg::load_env_levels();
   utils::log_version();
   CLI::App app{"Loud.cpp\nSpeech to text with ONNX and Whisper\n"};

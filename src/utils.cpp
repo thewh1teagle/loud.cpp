@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "config.h"
+
 #include <filesystem>
 #include <fmt/color.h>
 #include <fmt/core.h>
@@ -115,7 +116,7 @@ void log_version() {
     auto issue_report =
         fmt::format(fg(fmt::color::crimson) | fmt::emphasis::bold,
                     "Found an issue? Report at {}", issue_url);
-    spdlog::debug(issue_report);
+    SPDLOG_ERROR(issue_report);
   }
 }
 
