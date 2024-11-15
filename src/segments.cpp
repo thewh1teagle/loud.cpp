@@ -10,7 +10,7 @@ namespace segments {
 static void
 handle_segment(whisper_context *ctx, whisper_full_params params,
                nlohmann::ordered_json *json,
-               const SherpaOnnxOfflineSpeakerDiarizationSegment *segments,
+               const std::vector<diarization::DiarizationSegment> &segments,
                std::vector<float> segment_data, int32_t index) {
   auto text = transcribe::transcribe_audio_chunk(
       ctx, params, segment_data.data(), segment_data.size());
@@ -28,9 +28,7 @@ handle_segment(whisper_context *ctx, whisper_full_params params,
 }
 
 nlohmann::ordered_json process_segments(
-    const SherpaOnnxOfflineSpeakerDiarizationSegment
-        *segments, // Assuming Segment is a defined struct or class
-    int32_t num_segments,
+    std::vector<diarization::DiarizationSegment> segments,
     const SherpaOnnxWave *wave, // Assuming Wave is a defined struct or class
     whisper_context *ctx,       // Assuming Context is a defined struct or class
     whisper_full_params params  // Assuming Params is a defined struct or class
@@ -39,7 +37,7 @@ nlohmann::ordered_json process_segments(
 
   // Iterate diarize segments
 
-  for (int32_t i = 0; i != num_segments; ++i) {
+  for (int32_t i = 0; i != segments.size(); ++i) {
 
     // Calculate start and end samples for the segment
     int32_t start_sample = static_cast<int32_t>(segments[i].start * 16000);

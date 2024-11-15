@@ -1,5 +1,4 @@
 // enable SPDLOG macros
-#include "fmt/format.h"
 #include <cstdlib>
 #include <string>
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
@@ -125,14 +124,12 @@ int main(int argc, char *argv[]) {
                              num_speakers, onnx_provider, onnx_num_threads);
   CHECK_NULL(sd);
   spinner.start();
-
-  const auto *result = diarization::run_diarization(sd, wave, spinner);
+  const auto segments =
+      diarization::run_diarization(argc, argv, sd, wave, spinner);
   spinner.stop();
-  CHECK_NULL(result);
-  const auto num_segments =
-      SherpaOnnxOfflineSpeakerDiarizationResultGetNumSegments(result);
-  const auto *segments =
-      SherpaOnnxOfflineSpeakerDiarizationResultSortByStartTime(result);
+  std::cout << termcolor::green << "✓" << termcolor::reset
+            << " Diarization complete!" << std::endl;
+  SherpaOnnxDestroyOfflineSpeakerDiarization(sd);
 
   // Start transcribe
   const auto params = transcribe::create_whisper_params(language);
@@ -141,17 +138,13 @@ int main(int argc, char *argv[]) {
       whisper_init_from_file_with_params(whisper_model_path.c_str(), cparams);
   CHECK_NULL(ctx);
 
-  auto json =
-      segments::process_segments(segments, num_segments, wave, ctx, params);
+  auto json = segments::process_segments(segments, wave, ctx, params);
   // Write JSON file
   if (!json_path.empty()) {
     utils::save_json(json_path, json);
   }
 
   // Cleanup
-  SherpaOnnxOfflineSpeakerDiarizationDestroySegment(segments);
-  SherpaOnnxOfflineSpeakerDiarizationDestroyResult(result);
-  SherpaOnnxDestroyOfflineSpeakerDiarization(sd);
   SherpaOnnxFreeWave(wave);
   whisper_free(ctx);
   return 0;

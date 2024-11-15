@@ -116,7 +116,7 @@ void log_version() {
     auto issue_report =
         fmt::format(fg(fmt::color::crimson) | fmt::emphasis::bold,
                     "Found an issue? Report at {}", issue_url);
-    SPDLOG_ERROR(issue_report);
+    SPDLOG_DEBUG(issue_report);
   }
 }
 

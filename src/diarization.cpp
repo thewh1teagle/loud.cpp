@@ -1,10 +1,15 @@
 
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_TRACE
+
 #include "diarization.h"
 #include "ffmpeg.h"
 #include "sherpa-onnx/c-api/c-api.h"
+#include "spdlog/spdlog.h"
 #include "spinner.h"
 #include "utils.h"
 #include <filesystem>
+#include <fstream>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -68,8 +73,7 @@ std::string format_timestamp(double seconds) {
   return oss.str();
 }
 
-void print_segment(const SherpaOnnxOfflineSpeakerDiarizationSegment &segment,
-                   const std::string &text) {
+void print_segment(const DiarizationSegment &segment, const std::string &text) {
   // Check if speaker has been assigned a color; if not, assign a color
   if (speaker_colors.find(segment.speaker) == speaker_colors.end()) {
     // Cycle through the colors based on the speaker ID
@@ -156,17 +160,117 @@ const SherpaOnnxWave *prepare_audio_file(const std::string &audio_file,
   return wave;
 }
 
-const SherpaOnnxOfflineSpeakerDiarizationResult *
-run_diarization(const SherpaOnnxOfflineSpeakerDiarization *sd,
+void to_json(nlohmann::json &j, const DiarizationSegment &segment) {
+  j = nlohmann::json{{"start", segment.start},
+                     {"end", segment.end},
+                     {"speaker", segment.speaker}};
+}
+
+void from_json(const nlohmann::json &j, DiarizationSegment &segment) {
+  j.at("start").get_to(segment.start);
+  j.at("end").get_to(segment.end);
+  j.at("speaker").get_to(segment.speaker);
+}
+
+std::string generate_cache_key(int argc, char *argv[]) {
+  std::ostringstream key_stream;
+  for (int i = 0; i < argc; ++i) {
+    key_stream << argv[i] << "_";
+  }
+
+  std::size_t hash_value = std::hash<std::string>{}(key_stream.str());
+
+  // Convert hash value to hexadecimal string
+  std::ostringstream hex_stream;
+  hex_stream << std::hex << std::setw(sizeof(hash_value) * 2)
+             << std::setfill('0') << hash_value;
+
+  return hex_stream.str();
+}
+
+void save_diarization_to_cache(
+    const std::string &cache_key,
+    const std::vector<DiarizationSegment> &segments) {
+  std::filesystem::path temp_dir =
+      std::filesystem::temp_directory_path() / "diarization_cache";
+  std::filesystem::create_directories(temp_dir);
+
+  std::filesystem::path cache_file = temp_dir / (cache_key + ".json");
+  SPDLOG_DEBUG("saving diarization to cache at {}", cache_file.string());
+
+  nlohmann::json json_segments = segments;
+
+  std::ofstream ofs(cache_file);
+  if (ofs.is_open()) {
+    ofs << json_segments.dump(4); // Pretty print with 4 spaces
+  }
+}
+
+std::vector<DiarizationSegment>
+load_diarization_from_cache(const std::string &cache_key) {
+  std::filesystem::path temp_dir =
+      std::filesystem::temp_directory_path() / "diarization_cache";
+  std::filesystem::path cache_file = temp_dir / (cache_key + ".json");
+
+  SPDLOG_DEBUG("searching for diarization cache at {}", cache_file.string());
+  if (!std::filesystem::exists(cache_file)) {
+    return {}; // Return empty vector if cache does not exist
+  }
+  SPDLOG_INFO("load diarization from cache in {}", cache_file.string());
+
+  std::ifstream ifs(cache_file);
+  nlohmann::json json_segments;
+  if (ifs.is_open()) {
+    ifs >> json_segments;
+  }
+
+  return json_segments.get<std::vector<DiarizationSegment>>();
+}
+
+const std::vector<DiarizationSegment>
+run_diarization(int argc, char *argv[],
+                const SherpaOnnxOfflineSpeakerDiarization *sd,
                 const SherpaOnnxWave *wave, Spinner &spinner) {
-  return SherpaOnnxOfflineSpeakerDiarizationProcessWithCallback(
-      sd, wave->samples, wave->num_samples,
-      [](int32_t num_processed_chunk, int32_t num_total_chunks,
-         void *arg) -> int32_t {
-        return diarization::diarization_progress_callback(
-            num_processed_chunk, num_total_chunks, static_cast<Spinner *>(arg));
-      },
-      &spinner);
+
+  std::string cache_key = generate_cache_key(argc, argv);
+
+  std::vector<DiarizationSegment> diarization_segments =
+      load_diarization_from_cache(cache_key);
+
+  if (!diarization_segments.empty()) {
+    return diarization_segments;
+  }
+  const SherpaOnnxOfflineSpeakerDiarizationResult *result =
+      SherpaOnnxOfflineSpeakerDiarizationProcessWithCallback(
+          sd, wave->samples, wave->num_samples,
+          [](int32_t num_processed_chunk, int32_t num_total_chunks,
+             void *arg) -> int32_t {
+            return diarization::diarization_progress_callback(
+                num_processed_chunk, num_total_chunks,
+                static_cast<Spinner *>(arg));
+          },
+          &spinner);
+
+  spinner.stop();
+  const auto num_segments =
+      SherpaOnnxOfflineSpeakerDiarizationResultGetNumSegments(result);
+  const auto *segments =
+      SherpaOnnxOfflineSpeakerDiarizationResultSortByStartTime(result);
+
+  for (int32_t i = 0; i < num_segments; ++i) {
+    DiarizationSegment segment;
+    segment.start = segments[i].start;
+    segment.end = segments[i].end;
+    segment.speaker = segments[i].speaker;
+    diarization_segments.push_back(segment);
+  }
+
+  SherpaOnnxOfflineSpeakerDiarizationDestroySegment(segments);
+  SherpaOnnxOfflineSpeakerDiarizationDestroyResult(result);
+
+  save_diarization_to_cache(cache_key, diarization_segments);
+
+  return diarization_segments;
 }
 
 } // namespace diarization
