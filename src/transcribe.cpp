@@ -48,9 +48,7 @@ whisper_full_params create_whisper_params(std::string &language) {
   wparams.translate = false;
   wparams.single_segment = true;
   wparams.print_progress = false;
-  wparams.no_context = false;
-  wparams.max_tokens = 32;
-  // wparams.split_on_word = true;
+  wparams.no_context = true;
 
   return wparams;
 }

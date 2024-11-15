@@ -1,6 +1,6 @@
 
 # Add whisper lib
-FetchContent_Declare(whisper URL https://github.com/ggerganov/whisper.cpp/archive/f19463ece2d43fd0b605dc513d8800eeb4e2315e.zip)
+FetchContent_Declare(whisper URL https://github.com/ggerganov/whisper.cpp/archive/f02b40bcb4849139fd7de2558aee64c737ab678e.zip)
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries" FORCE)
 set(WHISPER_BUILD_TESTS OFF CACHE BOOL "")
